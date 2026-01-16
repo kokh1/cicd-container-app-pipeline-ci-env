@@ -1,0 +1,29 @@
+#should probably CHANGE THE NAME OF THIS FILE to Dockerfile.gitlab-runner-custom so it matches the compose file for the runner
+#this is the Dockerfile that builds the base image for the gitlab-runner container
+#this installs Docker CLI into the gitlab-runner container so that it can run Docker commands
+#this is needed because the official gitlab-runner image does not include Docker CLI by default
+
+#Start from the official Gitlab Runner image
+FROM gitlab/gitlab-runner:alpine 
+    #could switch to gitlab/gitlab-runner:debian
+    #but debian image is large and requires more maintenance
+
+#install Bash in the alpine base image
+RUN apk add --no-cache bash
+
+#make docker cli available in the gitlab-runner container
+#allow the gitlab-runner container to use the docker daemon (socket mount) with alpine base image
+RUN apk add --no-cache docker-cli
+
+#install python3 and pip in the alpine base image
+RUN apk add --no-cache python3 py3-pip
+
+#Switch to root user to install deps
+USER root
+
+######
+
+#if using a debian based image, use the followiing commands to install docker cli after switching to root user
+#instead of RUN apk add --no-cache docker-cli
+
+#RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*

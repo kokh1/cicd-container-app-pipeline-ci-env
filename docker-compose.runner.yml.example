@@ -1,0 +1,49 @@
+#EXAMPLE configuration file for locally hosted Gitlab runner using docker-compose
+
+services:
+  gitlab-runner:
+    user: root
+    #image: gitlab/gitlab-runner:latest
+      #the imagee field isn't needed because building an image per Dockerfile bc official gitlab-runner image doesn't include docker cli
+    build:
+      context: . 
+      dockerfile: Dockerfile.gitlab-runner #specify custom Dockerfile for building gitlab-runner image with docker cli since official gitlab-runner image doesn't include it
+    image: gitlab-runner-custom:latest #this name of the built image which is custom b/c it adds docker cli to the official gitlab-runner image
+    container_name: gitlab-runner
+    restart: always
+    networks:
+      - gitlab-network
+    environment:
+      - CI_SERVER_URL=${CI_SERVER_URL}
+      - GITLAB_PORT=${GITLAB_PORT}
+      - REGISTRATION_TOKEN=${REGISTRATION_TOKEN} #for registration with Gitlab
+      - GITLAB_CI_TRIGGER_TOKEN=${GITLAB_CI_TRIGGER_TOKEN} #for authenticating CI triggers with Gitlab
+      - GITLAB_TOKEN_1=${GITLAB_TOKEN_1}       #for authenticating runner with Gitlab
+      - GITLAB_TOKEN_2=${GITLAB_TOKEN_2}       #optional backup token for authenticating runner with Gitlab
+      - GITLAB_PAT=${GITLAB_PAT}             #personal access token for authenticaing with Gitlab (i.e., their API)
+      - RUNNER_NAME=${RUNNER_NAME}
+      - RUNNER_EXECUTOR=${RUNNER_EXECUTOR}
+      - REGISTER_NON_INTERACTIVE=true
+          #turns runner back on if Docker restarts
+      - DOCKER_IMAGE=${DOCKER_IMAGE} #use dynamically set image
+    env_file:
+      - /Users/<user>/docker/gitlab/project1/.env #path to env file for gitlab directory
+      - /Users/<user>/flask-app-template/.env #path to env file for project directory
+    volumes:
+      #store the runner config persistently (the toml)
+      - ./runner-config:/etc/gitlab-runner
+      #allows access to host Docker daemon from within the runner container
+      #allows the runner and any executor containers to start Docker containers for jobs (by talking to the host docker daemon)
+      #aka mount the docker socket
+      - /var/run/docker.sock:/var/run/docker.sock
+      #allow runner explicit read/write permissions
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      #mount the local project directory using the envar
+      - ${PROJECT_PATH}:/builds/flask-app-template
+       #mount the .ssh directory as read-only (assumes .ssh directory is on host)
+      - /Users/<user>/.ssh:/root/.ssh:ro
+
+networks:
+  gitlab-network:
+    driver: bridge
+    external: true

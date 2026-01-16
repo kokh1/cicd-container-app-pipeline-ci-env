@@ -1,0 +1,26 @@
+#configuration file for locally hosted Gitlab Container Registry using docker-compose
+services:
+  gitalab-registry:
+    image: registry:2 #name of the the official Docker registry image for running the Gitlab Container Registry
+    container_name: gitlab-container-registry
+    restart: always
+    environment:
+      - REGISTRY_HTTP_ADDR=0.0.0.0:5000 #maybe can leave this out: to listen on all ips inside the container on port 5000
+      - GITLAB_PAT=${GITLAB_PAT} #auth for local gitlab registry same as regular gitlab auth
+      #REGISTRY_STORAGE_DELETE_ENABLED: "true" #enable deletion of images from the registry
+    ports:
+      - "${REGISTRY_PORT:-8930}:5000" #host port:container port w/ fallback to 8930 if REGISTRY_PORT envar not set
+    volumes: 
+      - registry-data:/var/lib/registry #persist the registry data
+    networks:
+      - gitlab-network #run on the existing gitlab-network so it can communicate with the gitlab contiainer (GITLAB CE)
+    
+volumes:
+  registry-data:
+    driver: local
+
+networks:
+  gitlab-network:
+    external: true #use the existing gitlab-network that the gitlab container (Gitlab CE) runs on
+    driver: bridge
+

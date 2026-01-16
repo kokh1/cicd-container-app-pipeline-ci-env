@@ -1,0 +1,69 @@
+#igonre docker-compose file for the runner
+#there is a docker-compose.runner.yml.example included for reference
+docker-compose.runner.yml
+
+#ignore stale override file for runner
+docker-compose.runner.override.yml
+
+#ignore .env files
+*.env
+
+#ignore kubeconfig files
+ci_kube/config
+
+#ignore backup files
+*.backup
+*.bak
+backups/
+
+#ignore tarballs
+*.tar.gz
+*.tar
+*.tgz
+
+#ignore runner system id
+.runner_system_id
+
+#ignore toml files
+*.toml
+
+#ignore toml backup
+/runner-config-back/
+
+#ignore gitlab logs
+logs/
+
+#ignore gitlab config files
+config/
+
+#ignore gitlab data files
+data/
+
+#ignore gitlab backup directory
+backup/
+
+#ignore system files
+.DS_Store
+Thunmbs.db
+
+#ignore temprary editor files
+*.swp
+*.swo
+*.swn
+*~
+
+#ignore IDE specific files
+.vscode/
+.idea/
+
+#ignore common build artifacts
+node_modules
+dist/
+__pycache__/
+*.pyc
+
+#ignore logs
+*.log
+
+#ignore flask-app-template directory
+flask-app-template/

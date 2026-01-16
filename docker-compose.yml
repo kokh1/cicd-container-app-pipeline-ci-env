@@ -1,0 +1,32 @@
+#configuration file for locally hosted Gitlab CE using docker-compose
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:18.5.1-ce.0
+    container_name: gitlab
+    #restart: always
+    hostname: localhost
+    ports:
+      - "8929:80" #for the local gitlab ce web ui
+      - "8443:443" #https port for gitlab ce web ui
+      - "2224:22"
+      
+    networks:
+      - gitlab-network
+    volumes: 
+      - gitlab_gitlab-config:/etc/gitlab
+      - gitlab_gitlab-logs:/var/log/gitlab
+      - gitlab_gitlab-data:/var/opt/gitlab
+
+volumes:
+  gitlab_gitlab-config:
+    external: true
+  gitlab_gitlab-logs:
+    external: true
+  gitlab_gitlab-data:
+    external: true
+
+networks:
+  gitlab-network:
+    external: true
+    driver: bridge
