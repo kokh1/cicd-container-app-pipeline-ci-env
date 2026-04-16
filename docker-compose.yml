@@ -6,13 +6,21 @@ services:
     container_name: gitlab
     #restart: always
     hostname: localhost
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab/'
+        prometheus_monitoring['enable'] = true
+        prometheus['listen_address'] = '0.0.0.0:9090'
+        gitlab_rails['monitoring_whitelist'] = ['127.0.0.0/16', '172.25.0.10']
     ports:
       - "8929:80" #for the local gitlab ce web ui
       - "8443:443" #https port for gitlab ce web ui
       - "2224:22"
+      - "9090:9090" #for prometheus
       
     networks:
-      - gitlab-network
+      gitlab-network:
+        ipv4_address: 172.25.0.10
     volumes: 
       - gitlab_gitlab-config:/etc/gitlab
       - gitlab_gitlab-logs:/var/log/gitlab
@@ -30,3 +38,7 @@ networks:
   gitlab-network:
     external: true
     driver: bridge
+    ipam:
+      config:
+      - subnet: 172.25.0.0/24
+        gateway: 172.25.0.1

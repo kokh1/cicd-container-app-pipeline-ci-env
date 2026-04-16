@@ -12,7 +12,8 @@ services:
     container_name: gitlab-runner
     restart: always
     networks:
-      - gitlab-network
+      gitlab-network:
+        ipv4_address: 172.25.0.12
     environment:
       - CI_SERVER_URL=${CI_SERVER_URL}
       - GITLAB_PORT=${GITLAB_PORT}
