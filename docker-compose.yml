@@ -12,6 +12,14 @@ services:
         prometheus_monitoring['enable'] = true
         prometheus['listen_address'] = '0.0.0.0:9090'
         gitlab_rails['monitoring_whitelist'] = ['127.0.0.0/16', '172.25.0.10']
+        prometheus['scrape_configs'] = [
+          {
+            'job_name' => 'gitlab-runner',
+            'static_configs' => [
+              'targets' => ['172.25.0.12:9252']
+            ]
+          }
+        ]
     ports:
       - "8929:80" #for the local gitlab ce web ui
       - "8443:443" #https port for gitlab ce web ui
