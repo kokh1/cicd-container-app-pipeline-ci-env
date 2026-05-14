@@ -14,6 +14,8 @@ services:
     networks:
       gitlab-network:
         ipv4_address: 172.25.0.12
+     ports:
+      - "9252:9252" #expose port 9252 to allow access to gitlab-runner metrics endpoint from outside the runner container
     environment:
       - CI_SERVER_URL=${CI_SERVER_URL}
       - GITLAB_PORT=${GITLAB_PORT}
